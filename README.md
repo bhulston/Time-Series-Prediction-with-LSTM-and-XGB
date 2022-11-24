@@ -16,6 +16,8 @@ When trying to collect relevant data on Order Book L2s, many exchange APIs do no
 ## Feature Engineering
 This took a lot of research but it seems like the most relevant features people use for order book modelling are log_return_ask, log_volume_ask, log_return_bid, and log_volume_bid. I also am adding features that take into account the liquidity and price depth near the mid-price. 
 
+Also working with creating price direction signals as features. Tuning the parameters for my alpha and price horizon to optimally smooth movement signals in the price. Otherwise, the data is very stocastic due to the nature of exchange data.
+
 ## Models
 The first model I decided to use was an LSTM Neural Network, which excels at at learning long sequences of observations, thus making it very good for time-series analysis.
 
