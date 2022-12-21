@@ -3,11 +3,17 @@ Build an algorithm that can predict LOB future states, in order to find optimal 
 
 At Ripple, an issue is that we struggle to optimize our liquidation costs. For any organization that has to perform high-volume purchases or liquidations on the market, this could be a helpful model to reduce slippage and other costs.
 
+# Quick Guide
+I used my own computer terminal to stream the websocket and to transform the data to create a new dataset. That dataset is used in the visual and modeling notebook
+* The websocket folder contains the classes and websocket I use to collect data
+* The data and feature processing folder contains the transformations and aggregations I did to create my dataset for visuals and models
+* The PyOrderBook_visuals_and_modeling notebook contains all my code for the visuals as well as the prediction models
+
 # Project Plan
-1. Take snap shots of the order book state at different times, both L2 (all open orders) and L1 (bid, mid, ask price) data. (DONE)
-2. Process data and perform feature extraction and engineering to create features that can be used properly by the model. (DONE)
-3. Design a series of predictive models including LSTM Neural Networks and Gradient Tree Boosting to predict future order book states (In-Progress)
-4. Compare model results and find the best model (or combination) to predict order book states (Not Started)
+1. Take snap shots of the order book state at different times, both L2 (all open orders) and L1 (bid, mid, ask price) data
+2. Process data and perform feature extraction and engineering to create features that can be used properly by the model
+3. Design a series of predictive models including LSTM Neural Networks and Gradient Tree Boosting to predict future order book states 
+4. Compare model results and find the best model (or combination) to predict order book states 
 
 ## Data Collection
 When trying to collect relevant data on Order Book L2s, many exchange APIs do not retain historical data (only present data). So the best option is to connect to a websocket (in my case, the BitMex one) and stream data over a set period of time. Every 10 seconds, I collect data on the current order book and save the data according to each "batch".
