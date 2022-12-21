@@ -31,6 +31,7 @@ Engineered several features:
 * Logarithmic transformation of returns
 * Liquidity depth at different levels to the mid-price
 * Smoothed data and directional signals
+* EMA and SMA
 
 Visualization of logarithmic transformation of returns:
 
