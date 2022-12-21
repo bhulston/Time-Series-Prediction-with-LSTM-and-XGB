@@ -46,7 +46,7 @@ Smoothed data:
 
 <img width="566" alt="image" src="https://user-images.githubusercontent.com/79114425/208793206-679b52f9-bd4d-4284-97e7-234b7d5b5363.png">
 
-As you can see, by smoothing the data we are able to reduce the "noise" in this feature
+As you can see, by smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends
 
 ## Models
 I built two models, a LSTM and a XG Boosted Tree.
