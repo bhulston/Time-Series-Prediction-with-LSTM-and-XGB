@@ -1,7 +1,7 @@
 # Short-Frame-Price-Prediction
 Build an algorithm that can predict LOB future states, in order to find optimal opportunities for liquidation
 
-At Ripple, an issue is that we struggle to optimize our liquidation costs. For any organization that has to perform high-volume purchases or liquidations on the market, this could be a helpful model to reduce slippage and other costs.
+While Ripple uses market makers for liquidations, I got the idea that in many cases, businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could be a helpful model to reduce slippage and other costs.
 
 # Quick Guide
 I used my own computer terminal to stream the websocket and to transform the data to create a new dataset. That dataset is used in the visual and modeling notebook
