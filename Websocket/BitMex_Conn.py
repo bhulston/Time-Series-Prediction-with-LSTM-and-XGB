@@ -90,9 +90,6 @@ class BitMEXWebsocket:
         instrument = self.data['instrument'][0]
         return {k: round(float(v or 0), instrument['tickLog']) for k, v in ticker.items()}
 
-    def store_ticker(self):
-        
-
     def funds(self):
         '''Get your margin details.'''
         return self.data['margin'][0]
@@ -138,7 +135,7 @@ class BitMEXWebsocket:
             w = csv.writer(f, delimiter = ',')
             for key, value in sorted(sells.items()):
                 order_size, order_time = value
-                w.writerow([key, order_size, order_time)
+                w.writerow([key, order_size, order_time])
 
         csv_file = str(current_time.strftime("C:/Users/brand/OneDrive/Documents/Python/PyOrderBook/Data/%m_%d_%Y,%H_%M_%S") + 'buys.csv')
 
