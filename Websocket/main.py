@@ -30,7 +30,7 @@ def run():
         #logger.info("Recent Trades: %s\n\n" % ws.recent_trades())
             # i think this is just the most recent trade
 
-        sleep(60)
+        sleep(10)
 
 def setup_logger():
     #prints logger info
