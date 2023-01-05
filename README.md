@@ -50,10 +50,16 @@ Smoothed data:
 As you can see, by smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends
 
 ## Models
-I built two models, a LSTM and a XG Boosted Tree.
+First, I built some baseline models using ARIMA and Exponential Smoothing. We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average). These are the most common statistical methods for time-series predictions.
+* All of these baseline models are univarate models that only take into account the mid-price
+* Note that the triple exponential smoothing model is probably a bad choice for this task
+   * Because we have data that is recorded on such a short time frame (1 day), it's unlikely to have any meaningful seasonality trends
+
+After building the baselines, I built two models that take multivariate inputs to see if we can improve, a LSTM and a XG Boosted Tree. 
+* For the LSTM I used a recursive approach, meaning that we make predictions of all variables at each step, then use those new predictions as inputs for the next step
+* For the XGBoost model, I used a direct approach, which trains a different model for each future timestep. AKA, for 10 predictions, we train 10 different models, each trained on a different time frame/time step.
 
 With a little bit of research, you will find that LSTMs seem to perform pretty poorly on real financial data. The reason for this is that they are extremely prone to over-fitting, and on top of that, they perform poorly when working with auto-regression problems.
-* Generally, it seems like they will predict shifted representations of the data
 * LSTM window sizes don't seem to make a big difference (or can perform worse), despite being one of the main features when used on financial data
 * An LSTM model might be better suited as part of a language processing model
 
@@ -66,10 +72,9 @@ Here is the model on the testing data:
 <img width="560" alt="image" src="https://user-images.githubusercontent.com/79114425/208794255-59518d74-a9fa-4008-b630-d7160809020d.png">
 * Note that while the values seem a little far apart, the actual numerical difference is really small because this is a very zoomed in timeframe
 
-While it seemed to perform really well on the training data, we can see our suspicions are confirmed that the predictions are essentially an over-fitted shift of previous data
+While it seemed to perform really well on the training data, we can see our suspicions are confirmed that the predictions perform poorly. This is probably, in part, due to us using a recursive approach, rather than a direct one. 
 
-
-An XGB model would perform much better (in-progress)
+XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradient boosted trees to 
 
 ## Things/difficulties to note
 
