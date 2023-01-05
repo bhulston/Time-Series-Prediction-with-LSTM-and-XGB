@@ -37,7 +37,7 @@ Visualization of logarithmic transformation of returns:
 
 <img width="580" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
 
-An example of why this is important is because when data is noisy, it can cause issues in the models. To combat this I looked at the effect of adding a directional smoothing signal.
+An example of why this is important is because when data is noisy, it can cause issues in the models. To combat this I looked at the effect of adding a directional smoothing signal. +1 for upward trends, 0 for stationary, and -1 for downtrends.
 
 Non-smoothed data (Red for a downtrend, blank for no movement, and green for an uptrend):
 
@@ -49,16 +49,23 @@ Smoothed data:
 
 As you can see, by smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends
 
-## Models
+## Baseline Models
 First, I built some baseline models using ARIMA and Exponential Smoothing. We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average). These are the most common statistical methods for time-series predictions.
 * All of these baseline models are univarate models that only take into account the mid-price
 * Note that the triple exponential smoothing model is probably a bad choice for this task
    * Because we have data that is recorded on such a short time frame (1 day), it's unlikely to have any meaningful seasonality trends
 
+![image](https://user-images.githubusercontent.com/79114425/210890640-2a1affa7-14c2-49d0-93ac-87c3a8a8141f.png)
+
+## XGB and LSTM Models
 After building the baselines, I built two models that take multivariate inputs to see if we can improve, a LSTM and a XG Boosted Tree. 
 * For the LSTM I used a recursive approach, meaning that we make predictions of all variables at each step, then use those new predictions as inputs for the next step
 * For the XGBoost model, I used a direct approach, which trains a different model for each future timestep. AKA, for 10 predictions, we train 10 different models, each trained on a different time frame/time step.
 
+### XGBoost
+XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradient boosted trees to 
+
+### LSTMs
 With a little bit of research, you will find that LSTMs seem to perform pretty poorly on real financial data. The reason for this is that they are extremely prone to over-fitting, and on top of that, they perform poorly when working with auto-regression problems.
 * LSTM window sizes don't seem to make a big difference (or can perform worse), despite being one of the main features when used on financial data
 * An LSTM model might be better suited as part of a language processing model
@@ -74,7 +81,7 @@ Here is the model on the testing data:
 
 While it seemed to perform really well on the training data, we can see our suspicions are confirmed that the predictions perform poorly. This is probably, in part, due to us using a recursive approach, rather than a direct one. 
 
-XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradient boosted trees to 
+
 
 ## Things/difficulties to note
 
