@@ -7,13 +7,14 @@ While Ripple uses market makers for liquidations, I got the idea that in many ca
 I used my own computer terminal to stream the websocket and to transform the data to create a new dataset. That dataset is used in the visual and modeling notebook
 * The websocket folder contains the classes and websocket I use to collect data
 * The data and feature processing folder contains the transformations and aggregations I did to create my dataset for visuals and models
-* The PyOrderBook_visuals_and_modeling notebook contains all my code for the visuals as well as the prediction models
+* The PyOrderBook_visuals notebook contains all my code for the visuals about the data itself
+* The PyOrderBook__modeling notebook contains all my code for the prediction models and the associated visuals as well
 
 # Project Plan
 1. Take snap shots of the order book state at different times, both L2 (all open orders) and L1 (bid, mid, ask price) data
 2. Process data and perform feature extraction and engineering to create features that can be used properly by the model
 3. Design a series of predictive models including LSTM Neural Networks and Gradient Tree Boosting to predict future order book states 
-4. Compare model results and find the best model (or combination) to predict order book states 
+4. Compare model results and find the best model to predict order book states 
 
 ## Data Collection
 When trying to collect relevant data on Order Book L2s, many exchange APIs do not retain historical data (only present data). So the best option is to connect to a websocket (in my case, the BitMex one) and stream data over a set period of time. Every 10 seconds, I collect data on the current order book and save the data according to each "batch".
@@ -50,26 +51,34 @@ Smoothed data:
 As you can see, by smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends
 
 ## Baseline Models
-First, I built some baseline models using ARIMA and Exponential Smoothing. We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average). These are the most common statistical methods for time-series predictions.
+First, I built some baseline models using ARIMA and Exponential Smoothing. 
+* We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average)
+  * These are the most common statistical methods for time-series predictions.
 * All of these baseline models are univarate models that only take into account the mid-price
 * Note that the triple exponential smoothing model is probably a bad choice for this task
    * Because we have data that is recorded on such a short time frame (1 day), it's unlikely to have any meaningful seasonality trends
 
 ![image](https://user-images.githubusercontent.com/79114425/210890640-2a1affa7-14c2-49d0-93ac-87c3a8a8141f.png)
-* While mse is a commmon measurement for success, I think in the case of this project, plotting the values gives us a much better idea of how models are performing relatively. The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends (up, down, or stationary)
+* While mse is a commmon measurement for success, I think in the case of this project, plotting the values gives us a much better idea of how models are performing relatively. 
+* The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends (up, down, or stationary)
 
 ## XGB and LSTM Models
-After building the baselines, I built two models that take multivariate inputs to see if we can improve, a LSTM and a XG Boosted Tree. 
+After building the baselines, I built two models that take multivariate inputs to see if we can improve, a LSTM and XGBoosted Trees 
 * For the LSTM I used a recursive approach, meaning that we make predictions of all variables at each step, then use those new predictions as inputs for the next step
 * For the XGBoost model, I used a direct approach, which trains a different model for each future timestep. AKA, for 10 predictions, we train 10 different models, each trained on a different time frame/time step.
+* More on these multi-step approaches here: 
 
 ### XGBoost
 XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradient boosted trees to make regression/classification predictions.
 * The main thing this requires is a lot of hyper parameter tuning! With the right tuning, XGBoost models seem to consistently outperform many other models, including ones specifically built for time-series
 * Some resources I used for XGBoost:
-  * blah
-  * blah
+  * [XGBoost](https://arxiv.org/abs/1603.02754)
+  * [Time Series Prediction Models](https://arxiv.org/pdf/2103.14250.pdf)
   * blah 
+
+Direct Approach explained:
+![image](https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png)
+
 
 Here we can see the performance of the XGBoost model in comparison to the baseline models we created.
 ![image](https://user-images.githubusercontent.com/79114425/210891496-e57eca25-8ea7-4965-9247-6bb4bce9b37b.png)
