@@ -56,6 +56,7 @@ First, I built some baseline models using ARIMA and Exponential Smoothing. We us
    * Because we have data that is recorded on such a short time frame (1 day), it's unlikely to have any meaningful seasonality trends
 
 ![image](https://user-images.githubusercontent.com/79114425/210890640-2a1affa7-14c2-49d0-93ac-87c3a8a8141f.png)
+* While mse is a commmon measurement for success, I think in the case of this project, plotting the values gives us a much better idea of how models are performing relatively. The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends (up, down, or stationary)
 
 ## XGB and LSTM Models
 After building the baselines, I built two models that take multivariate inputs to see if we can improve, a LSTM and a XG Boosted Tree. 
@@ -63,7 +64,20 @@ After building the baselines, I built two models that take multivariate inputs t
 * For the XGBoost model, I used a direct approach, which trains a different model for each future timestep. AKA, for 10 predictions, we train 10 different models, each trained on a different time frame/time step.
 
 ### XGBoost
-XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradient boosted trees to 
+XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradient boosted trees to make regression/classification predictions.
+* The main thing this requires is a lot of hyper parameter tuning! With the right tuning, XGBoost models seem to consistently outperform many other models, including ones specifically built for time-series
+* Some resources I used for XGBoost:
+  * blah
+  * blah
+  * blah 
+
+Here we can see the performance of the XGBoost model in comparison to the baseline models we created.
+![image](https://user-images.githubusercontent.com/79114425/210891496-e57eca25-8ea7-4965-9247-6bb4bce9b37b.png)
+
+
+Because the XGBoost model performed pretty well, I wanted to see how it would perform when we trained it on 40 timesteps:
+![image](https://user-images.githubusercontent.com/79114425/210891184-6421d4a7-36b5-4353-83ee-d6a55bfb72a8.png)
+* As you can see, the model is performing surprisingly well in capturing the trends of future movements
 
 ### LSTMs
 With a little bit of research, you will find that LSTMs seem to perform pretty poorly on real financial data. The reason for this is that they are extremely prone to over-fitting, and on top of that, they perform poorly when working with auto-regression problems.
