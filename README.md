@@ -84,15 +84,15 @@ XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradie
 Direct Approach explained:
 ![image](https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png)
 
-Hyperparameters, these took a lot of tuning and testing to get desirable results:
 
+Hyperparameters:
 <img width="194" alt="image" src="https://user-images.githubusercontent.com/79114425/210907642-69d7499b-7682-4127-8619-0d4f06d10e21.png">
 
 * The most important hyperparameters I focused on when tuning were:
-  * n_estimators: In a dataset with not that much data, we had to raise this from the default of 100 to get proper results
-  * max_depth: The max depth of the trees. The whole point of an XGBoost model is to leverage an ensemble of weak learners. Thus, making sure this value is not too high is crucial for good results. 
-  * learning_rate: How "fast" our model learns, or really the steps that it takes when using gradient descent for optimization. Many models out there have very small learning rates, but due to the stochastic nature of this project, a higher learning rate of 0.1 is more appropriate.
-  * colsample_bytree: This value indicates the proportions of columns to be used in each tree that is built. We reduce this because we do have a lot of features (about 20)
+  * **n_estimators**: In a dataset with not that much data, we had to raise this from the default of 100 to get proper results
+  * **max_depth**: The max depth of the trees. The whole point of an XGBoost model is to leverage an ensemble of weak learners. Thus, making sure this value is not too high is crucial for good results. 
+  * **learning_rate**: How "fast" our model learns, or really the steps that it takes when using gradient descent for optimization. Many models out there have very small learning rates, but due to the stochastic nature of this project, a higher learning rate of 0.1 is more appropriate.
+  * **colsample_bytree**: This value indicates the proportions of columns to be used in each tree that is built. We reduce this because we do have a lot of features (about 20)
 
 Here we can see the performance of the XGBoost model in comparison to the baseline models we created.
 
@@ -119,7 +119,6 @@ Here is the model on the testing data:
 * Note that while the values seem a little far apart, the actual numerical difference is really small because this is a very zoomed in timeframe
 
 While it seemed to perform really well on the training data, we can see our suspicions are confirmed that the predictions perform poorly. This is probably, in part, due to us using a recursive approach, rather than a direct one. 
-
 
 
 ## Things/difficulties to note
