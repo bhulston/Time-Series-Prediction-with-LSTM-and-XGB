@@ -82,11 +82,12 @@ XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradie
   * [Fine tuning XGBoost](https://medium.com/towards-data-science/fine-tuning-xgboost-in-python-like-a-boss-b4543ed8b1e) - medium
 
 Direct Approach explained:
-![image](https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png)
 
+<img width = "200", alt="image" src="https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png">
 
 Hyperparameters:
-<img width="194" alt="image" src="https://user-images.githubusercontent.com/79114425/210907642-69d7499b-7682-4127-8619-0d4f06d10e21.png">
+
+<img width="200" alt="image" src="https://user-images.githubusercontent.com/79114425/210907642-69d7499b-7682-4127-8619-0d4f06d10e21.png">
 
 * The most important hyperparameters I focused on when tuning were:
   * **n_estimators**: In a dataset with not that much data, we had to raise this from the default of 100 to get proper results
