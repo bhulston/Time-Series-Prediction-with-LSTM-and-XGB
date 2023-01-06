@@ -27,6 +27,9 @@ I put the data collection and feature engineering at the end if you are interest
 
 
 ## Baseline Models
+
+The dataset we are working with is L2 order book information from BitMex. This includes the orders at different price levels. I streamed data for around 24 hours, and data was collected very 30 seconds, amounting to 2500 rows, with 18 features columns after feature engineering. 
+
 First, I built some **univariate** baseline models using ARIMA and Exponential Smoothing. 
 * We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average)
   * Alpha in exponential smoothing models indicate to us how much we want to smooth the data. Higher alphas indicate we want to more heavily weight recent points.
