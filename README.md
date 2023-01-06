@@ -55,7 +55,7 @@ Non-smoothed data, i.e. a +1 when price moved up (Red for a downtrend, blank for
 Smoothed data, i.e. setting a threshold value for price movements to indicate 1 or -1, as well as using moving averages for the signal values:
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905941-38d47593-17b1-493b-bbf0-faadbe0fe9cd.png">
-* As you can see, by smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends
+By smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends. Looking at the image above, it is clear we do a much better job of capturing "stationary" trends, because we are less sensitive to small changes.
 
 ## Baseline Models
 First, I built some **univariate** baseline models using ARIMA and Exponential Smoothing. 
