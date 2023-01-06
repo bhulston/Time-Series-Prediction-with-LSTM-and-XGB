@@ -81,6 +81,8 @@ XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradie
   * [Time Series Prediction Models](https://arxiv.org/pdf/2103.14250.pdf) -arxiv
   * [Fine tuning XGBoost](https://medium.com/towards-data-science/fine-tuning-xgboost-in-python-like-a-boss-b4543ed8b1e) - medium
 
+The main data processing we needed to conduct for XGBoost modeling was adding the lag features. Meaning at each timestep, I wanted to add values for the previous 20 timesteps as well so the XGBoost model would have relevant information on previous timesteps as well.
+
 There are a few ways to setup XGBoost (and LSTM) for multi-step predictions. In order to do this, there are a few main methods that might work I found:
 
  1.   Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
