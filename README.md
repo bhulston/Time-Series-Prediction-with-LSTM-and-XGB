@@ -41,13 +41,18 @@ Visualization of logarithmic transformation of returns:
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
 
-An example of why this is important is because when data is noisy, it can make predictions difficult. To combat this I added smoothed directional signals and smoothed price columns (like EMA).
+I engineered features that **suited my goal (trends, not prices**). This is important because when data is noisy, it can make predictions difficult and more "sporadic". To combat this:
+* I added smoothed directional signals and smoothed price columns (like EMA). 
+* By smoothing the data, I am hoping for the model to be less sensitive to sharp spikes, making it better at capturing general trends. 
+* On top of that, the price is stationary at different points, which can be hard for ML models to learn
+
+A good example is with the directional signal value
 
 Non-smoothed data, i.e. a +1 when price moved up (Red for a downtrend, blank for no movement, and green for an uptrend):
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905840-ee214bd0-b3d0-48de-b6c8-a9e90d3c88cd.png">
 
-Smoothed data, i.e. setting a threshold value for price movements, as well as using moving averages for the signal values:
+Smoothed data, i.e. setting a threshold value for price movements to indicate 1 or -1, as well as using moving averages for the signal values:
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905941-38d47593-17b1-493b-bbf0-faadbe0fe9cd.png">
 * As you can see, by smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends
