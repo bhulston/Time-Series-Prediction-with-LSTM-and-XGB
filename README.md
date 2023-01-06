@@ -1,5 +1,7 @@
 # Short-Frame-Price-Prediction
 Build an algorithm that can predict LOB future states, in order to find optimal opportunities for liquidation. Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs.
+**The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends and capitalize on those**
+
 
 # Quick Guide
 I used my own terminal to stream the websocket and to transform the data to create a new dataset, which is used in the visuals and modeling notebook in Google Colab
@@ -54,8 +56,7 @@ First, I built some **univariate** baseline models using ARIMA and Exponential S
 * We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average)
   * Alpha in exponential smoothing models indicate to us how much we want to smooth the data. Higher alphas indicate we want to more heavily weight recent points.
   * These are the most common statistical methods for time-series predictions.
-* Note that the triple exponential smoothing model is probably a bad choice for this task
-   * Because we have data that is recorded on such a short time frame (1 day), it's unlikely to have any meaningful seasonality trends
+* Note that the triple exponential smoothing model is probably a bad choice for this task because on this short time frame, it's unlikely to have any meaningful seasonality trends
 
 ![image](https://user-images.githubusercontent.com/79114425/210890640-2a1affa7-14c2-49d0-93ac-87c3a8a8141f.png)
 * While mse is a commmon measurement for success, I think in the case of this project, plotting the values gives us a much better idea of how models are performing relatively. 
