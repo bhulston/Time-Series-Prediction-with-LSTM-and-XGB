@@ -83,7 +83,7 @@ XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradie
 
 Direct Approach explained:
 
-<img width = "200" alt="image" src="https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png">
+<img width = "400" alt="image" src="https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png">
 
 Hyperparameters:
 
