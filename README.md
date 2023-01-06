@@ -81,6 +81,13 @@ XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradie
   * [Time Series Prediction Models](https://arxiv.org/pdf/2103.14250.pdf) -arxiv
   * [Fine tuning XGBoost](https://medium.com/towards-data-science/fine-tuning-xgboost-in-python-like-a-boss-b4543ed8b1e) - medium
 
+There are a few ways to setup XGBoost (and LSTM) for multi-step predictions. In order to do this, there are a few main methods that might work I found:
+
+ 1.   Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
+ 2.   Direct Approach: Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
+ 3.   Recursive Approach:  Wrap the XGboost with Scikit Learn's MultiOutputRegressor() to get multiple outputs by creating clusters of models that actually predict values individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price). Rinse & Repeat.
+
+
 Direct Approach explained:
 
 <img width = "400" alt="image" src="https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png">
@@ -110,9 +117,16 @@ Because the XGBoost model performed pretty well, I wanted to see how it would pe
 * As you can see, the model is performing surprisingly well in capturing the trends of future movements
 
 ## LSTMs
-With a little bit of research, you will find that LSTMs seem to perform pretty poorly on real financial data. The reason for this is that they are extremely prone to over-fitting, and on top of that, they perform poorly when working with auto-regression problems.
+
+With a little bit of research, you will find that LSTM neural networks seem to perform pretty poorly on real financial data. The reason for this is that they are extremely prone to over-fitting, and on top of that, they perform poorly when working with auto-regression problems.
 * LSTM window sizes don't seem to make a big difference (or can perform worse), despite being one of the main features when used on financial data
 * An LSTM model might be better suited as part of a language processing model
+
+To build the LSTM, there is some more data processing that is needed in comparison the XGBoost model. The main things are:
+* We need to scale the data to a [-1,1] scale, using an encoder and decoder to transform the values both ways
+* Add a lookback transformation that is essentially a moving window of data from past points
+  * LSTM models use sequences as inputs that have a shape in 3 dimensions - [batch size, lookback/sequences, num features]
+  * I.e. with a lookback of 10, input might be (2343 timesteps, 10 sequences, 19 features)
 
 Here we can see the LSTM model compared to the training data. Values as inputs for the model are standardized, but I scaled them back up for these representations:
 
@@ -121,9 +135,11 @@ Here we can see the LSTM model compared to the training data. Values as inputs f
 Here is the model on the testing data:
 
 <img width="560" alt="image" src="https://user-images.githubusercontent.com/79114425/208794255-59518d74-a9fa-4008-b630-d7160809020d.png">
-* Note that while the values seem a little far apart, the actual numerical difference is really small because this is a very zoomed in timeframe
 
-While it seemed to perform really well on the training data, we can see our suspicions are confirmed that the predictions perform poorly. This is probably, in part, due to us using a recursive approach, rather than a direct one. 
+While it seemed to perform really well on the training data, we can see our suspicions are confirmed that the predictions perform poorly. This is probably, in part, due to us using a recursive approach, rather than a direct one. When using recursive approaches, errors can compound on each other. Here is a great illustration I found:
+
+![image](https://user-images.githubusercontent.com/79114425/210911074-04370cc2-019b-400d-ba70-592debd205c0.png)
+
 
 
 ## Things/difficulties to note
@@ -131,7 +147,7 @@ While it seemed to perform really well on the training data, we can see our susp
 This article highlights how predicting prices is difficult, as prices seem to change by a very small amount if not 0, with noise.
 https://hackernoon.com/dont-be-fooled-deceptive-cryptocurrency-price-predictions-using-deep-learning-bf27e4837151 
 
-Depending on the volume of data and processing time, we might need an auto encoder to perform this analysis in a timely manner since this issue requires relatively quick response times. 
+Depending on the volume of data and processing time, we might need an auto encoder to perform this analysis in a timely manner since this issue requires relatively quick response times. The xgboost direct approach, while performing the best, also took the longest to train each time.
 
 Due to the difficulty of predicting L2 order books (all orders open), we will use the L2 information and L1 information to predict the L1 results (mid, bid, ask prices)
 
