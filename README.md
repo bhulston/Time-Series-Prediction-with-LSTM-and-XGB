@@ -114,6 +114,8 @@ Because the XGBoost model performed pretty well, I wanted to see how it would pe
 ![image](https://user-images.githubusercontent.com/79114425/210891184-6421d4a7-36b5-4353-83ee-d6a55bfb72a8.png)
 
 * As you can see, the model is performing surprisingly well in capturing the trends of future movements
+* In fact, we don't see an increasing error even at the 40 timesteps in the future, compared to the original 10 that we predicted.
+   * By using the direct approach, we don't run into the issue of compounding error!!
 
 ## LSTMs
 
