@@ -1,5 +1,6 @@
 # Short-Frame-Price-Prediction
-Build an algorithm that can predict LOB future states, in order to find optimal opportunities for liquidation. Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs.
+Build an algorithm that can predict LOB future states, in order to find optimal opportunities for liquidation. Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
+
 **The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends and capitalize on those**
 
 
