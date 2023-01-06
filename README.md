@@ -92,7 +92,7 @@ Hyperparameters:
 * The most important hyperparameters I focused on when tuning were:
   * **n_estimators**: In a dataset with not that much data, we had to raise this from the default of 100 to get proper results
   * **max_depth**: The max depth of the trees. The whole point of an XGBoost model is to leverage an ensemble of weak learners. Thus, making sure this value is not too high is crucial for good results. 
-  * **learning_rate**: How "fast" our model learns, or really the steps that it takes when using gradient descent for optimization. Many models out there have very small learning rates, but due to the stochastic nature of this project, a higher learning rate of 0.1 is more appropriate.
+  * **learning_rate**: How "fast" our model learns, or really the steps that it takes when using gradient descent for optimization. Many models out there have very small learning rates, but due to the stochastic nature of this project, a higher learning rate of 0.1 is more appropriate to avoid getting stuck in local minimas
   * **colsample_bytree**: This value indicates the proportions of columns to be used in each tree that is built. We reduce this because we do have a lot of features (about 20)
 
 Here we can see the performance of the XGBoost model in comparison to the baseline models we created.
