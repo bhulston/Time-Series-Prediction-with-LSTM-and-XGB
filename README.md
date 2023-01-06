@@ -17,18 +17,22 @@ I used my own computer terminal to stream the websocket and to transform the dat
 4. Compare model results and find the best model to predict order book states 
 
 ## Data Collection
-When trying to collect relevant data on Order Book L2s, many exchange APIs do not retain historical data (only present data). So the best option is to connect to a websocket (in my case, the BitMex one) and stream data over a set period of time. Every 10 seconds, I collect data on the current order book and save the data according to each "batch".
+When trying to collect relevant data on Order Book L2s, many exchange APIs do not retain historical data (only present data). So the best option is to connect to a websocket (in my case, the BitMex one) and stream data over a set period of time. Every 30 seconds, I collect data on the current order book and save the data according to each "batch".
 
-Here is an example of the data that we collected over a few hours:
-<img width="572" alt="image" src="https://user-images.githubusercontent.com/79114425/208792913-82890b74-83f3-411b-8b27-7a376c0909eb.png">
+Some of the things we collected are: Order quantities at different bid and ask prices. Mid price. Recent purchase price.
+* From these we can calculate all our other variables, such as liquidity, moving averages, etc.
 
-Here is an example of the market depth near the mid-price:
+Here is a graph of the mid-price data that we collected over about 24 hours:
+<img width="480" alt="image" src="https://user-images.githubusercontent.com/79114425/210905065-c9dd4492-2a99-4ae7-a38d-563bf76398fe.png">
 
-<img width="575" alt="image" src="https://user-images.githubusercontent.com/79114425/208793600-1cde12c4-d6e2-4b4a-bd45-97173aee9abb.png">
+When it comes to prices on order books, liquidity definitely plays a larger role than many people seem to think. For price movements to occur, you have to "climb" over the steps on either side.
+Here is an example of the market depth(liquidity) near the mid-price:
+
+<img width="476" alt="image" src="https://user-images.githubusercontent.com/79114425/210905099-4d98d045-e9c2-4736-ac9d-4ba04744b3f0.png">
 
 
 ## Feature Engineering
-Engineered several features:
+I engineered several features based off of the data we collected. The formulas and algorithms can be found in the feature engineering doc:
 * Logarithmic transformation of returns
 * Liquidity depth at different levels to the mid-price
 * Smoothed data and directional signals
@@ -40,15 +44,15 @@ Visualization of logarithmic transformation of returns:
 
 An example of why this is important is because when data is noisy, it can cause issues in the models. To combat this I looked at the effect of adding a directional smoothing signal. +1 for upward trends, 0 for stationary, and -1 for downtrends.
 
-Non-smoothed data (Red for a downtrend, blank for no movement, and green for an uptrend):
+Non-smoothed data, i.e. a +1 when price moved up (Red for a downtrend, blank for no movement, and green for an uptrend):
 
-<img width="571" alt="image" src="https://user-images.githubusercontent.com/79114425/208793132-bda976ed-d5e8-44bd-823a-262b29f23b57.png">
+<img width="479" alt="image" src="https://user-images.githubusercontent.com/79114425/210905840-ee214bd0-b3d0-48de-b6c8-a9e90d3c88cd.png">
 
-Smoothed data:
+Smoothed data, i.e. setting a threshold value for price movements, as well as using moving averages for the signal values:
 
-<img width="566" alt="image" src="https://user-images.githubusercontent.com/79114425/208793206-679b52f9-bd4d-4284-97e7-234b7d5b5363.png">
+<img width="476" alt="image" src="https://user-images.githubusercontent.com/79114425/210905941-38d47593-17b1-493b-bbf0-faadbe0fe9cd.png">
 
-As you can see, by smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends
+* As you can see, by smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends
 
 ## Baseline Models
 First, I built some baseline models using ARIMA and Exponential Smoothing. 
