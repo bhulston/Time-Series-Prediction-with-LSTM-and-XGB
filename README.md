@@ -1,7 +1,9 @@
 # Short-Frame-Price-Prediction
 The plan is to build an algorithm that can predict LOB future states, in order to find optimal opportunities for liquidation. Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
 
-Many LSTM or XGB price predictions you see online often feed real future price information as inputs for future predictions, as you might do with a classification problem. However, when predicting prices, you assumedly want to predict several timesteps in the future, and in a real scenario, you need to make these predictions without "real" future inputs. Rather than using the x values from the testing data, we need to find a way to predict all testing results, with only the training data... More on this in the modeling section
+* Many projects you find online use x testing data as inputs for their regression
+* In a real scenario, you would not have these future inputs, instead we need to make **multi-step** predictions, using _only_ the training data
+   * We can either predict what those future inputs would be, or train the model to predict at several different timesteps in the future... More on this in modeling section  
 
 **The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends and capitalize on those**
 
