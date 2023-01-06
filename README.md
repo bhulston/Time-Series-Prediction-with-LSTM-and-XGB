@@ -1,10 +1,8 @@
 # Short-Frame-Price-Prediction
-Build an algorithm that can predict LOB future states, in order to find optimal opportunities for liquidation
-
-While Ripple uses market makers for liquidations, I got the idea that in many cases, businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could be a helpful model to reduce slippage and other costs.
+Build an algorithm that can predict LOB future states, in order to find optimal opportunities for liquidation. Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs.
 
 # Quick Guide
-I used my own computer terminal to stream the websocket and to transform the data to create a new dataset. That dataset is used in the visual and modeling notebook
+I used my own terminal to stream the websocket and to transform the data to create a new dataset, which is used in the visuals and modeling notebook in Google Colab
 * The websocket folder contains the classes and websocket I use to collect data
 * The data and feature processing folder contains the transformations and aggregations I did to create my dataset for visuals and models
 * The PyOrderBook_visuals notebook contains all my code for the visuals about the data itself
@@ -12,24 +10,22 @@ I used my own computer terminal to stream the websocket and to transform the dat
 
 # Project Plan
 1. Take snap shots of the order book state at different times, both L2 (all open orders) and L1 (bid, mid, ask price) data
-2. Process data and perform feature extraction and engineering to create features that can be used properly by the model
+2. Process data and perform feature extraction and engineering to create features that can be used properly by the models
 3. Design a series of predictive models including LSTM Neural Networks and Gradient Tree Boosting to predict future order book states 
 4. Compare model results and find the best model to predict order book states 
 
 ## Data Collection
 When trying to collect relevant data on Order Book L2s, many exchange APIs do not retain historical data (only present data). So the best option is to connect to a websocket (in my case, the BitMex one) and stream data over a set period of time. Every 30 seconds, I collect data on the current order book and save the data according to each "batch".
 
-Some of the things we collected are: Order quantities at different bid and ask prices. Mid price. Recent purchase price.
-* From these we can calculate all our other variables, such as liquidity, moving averages, etc.
-
+Some of the things we collected are: Order quantities at different bid and ask prices, timestamps, mid price. recent purchase price.
 Here is a graph of the mid-price data that we collected over about 24 hours:
+
 <img width="480" alt="image" src="https://user-images.githubusercontent.com/79114425/210905065-c9dd4492-2a99-4ae7-a38d-563bf76398fe.png">
 
 When it comes to prices on order books, liquidity definitely plays a larger role than many people seem to think. For price movements to occur, you have to "climb" over the steps on either side.
 Here is an example of the market depth(liquidity) near the mid-price:
 
 <img width="476" alt="image" src="https://user-images.githubusercontent.com/79114425/210905099-4d98d045-e9c2-4736-ac9d-4ba04744b3f0.png">
-
 
 ## Feature Engineering
 I engineered several features based off of the data we collected. The formulas and algorithms can be found in the feature engineering doc:
@@ -40,38 +36,39 @@ I engineered several features based off of the data we collected. The formulas a
 
 Visualization of logarithmic transformation of returns:
 
-<img width="580" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
+<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
 
-An example of why this is important is because when data is noisy, it can cause issues in the models. To combat this I looked at the effect of adding a directional smoothing signal. +1 for upward trends, 0 for stationary, and -1 for downtrends.
+An example of why this is important is because when data is noisy, it can make predictions difficult. To combat this I added smoothed directional signals and smoothed price columns (like EMA).
 
 Non-smoothed data, i.e. a +1 when price moved up (Red for a downtrend, blank for no movement, and green for an uptrend):
 
-<img width="479" alt="image" src="https://user-images.githubusercontent.com/79114425/210905840-ee214bd0-b3d0-48de-b6c8-a9e90d3c88cd.png">
+<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905840-ee214bd0-b3d0-48de-b6c8-a9e90d3c88cd.png">
 
 Smoothed data, i.e. setting a threshold value for price movements, as well as using moving averages for the signal values:
 
-<img width="476" alt="image" src="https://user-images.githubusercontent.com/79114425/210905941-38d47593-17b1-493b-bbf0-faadbe0fe9cd.png">
-
+<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905941-38d47593-17b1-493b-bbf0-faadbe0fe9cd.png">
 * As you can see, by smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends
 
 ## Baseline Models
-First, I built some baseline models using ARIMA and Exponential Smoothing. 
+First, I built some **univariate** baseline models using ARIMA and Exponential Smoothing. 
 * We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average)
   * Alpha in exponential smoothing models indicate to us how much we want to smooth the data. Higher alphas indicate we want to more heavily weight recent points.
   * These are the most common statistical methods for time-series predictions.
-* All of these baseline models are univarate models that only take into account the mid-price
 * Note that the triple exponential smoothing model is probably a bad choice for this task
    * Because we have data that is recorded on such a short time frame (1 day), it's unlikely to have any meaningful seasonality trends
 
 ![image](https://user-images.githubusercontent.com/79114425/210890640-2a1affa7-14c2-49d0-93ac-87c3a8a8141f.png)
 * While mse is a commmon measurement for success, I think in the case of this project, plotting the values gives us a much better idea of how models are performing relatively. 
-* The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends (up, down, or stationary)
+* **The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends (up, down, or stationary)**
 
 # XGB and LSTM Models
-After building the baselines, I built two models that take multivariate inputs to see if we can improve, a LSTM and XGBoosted Trees 
-* For the LSTM I used a recursive approach, meaning that we make predictions of all variables at each step, then use those new predictions as inputs for the next step
-* For the XGBoost model, I used a direct approach, which trains a different model for each future timestep. AKA, for 10 predictions, we train 10 different models, each trained on a different time frame/time step.
-* More on these multi-step approaches here: 
+After building the baselines, I built two models that take **multivariate** inputs to see if we can improve, a LSTM and XGBoosted Trees 
+* For the LSTM I used a recursive approach, while for the XGBoost model, I used a direct approach
+* 
+There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
+ 1.   Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
+ 2.   Direct Approach: Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
+ 3.   Recursive Approach:  Get multiple outputs by creating clusters of models that actually predict features individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
 
 ## XGBoost
 XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradient boosted trees to make regression/classification predictions.
@@ -82,13 +79,6 @@ XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradie
   * [Fine tuning XGBoost](https://medium.com/towards-data-science/fine-tuning-xgboost-in-python-like-a-boss-b4543ed8b1e) - medium
 
 The main data processing we needed to conduct for XGBoost modeling was adding the lag features. Meaning at each timestep, I wanted to add values for the previous 20 timesteps as well so the XGBoost model would have relevant information on previous timesteps as well.
-
-There are a few ways to setup XGBoost (and LSTM) for multi-step predictions. In order to do this, there are a few main methods that might work I found:
-
- 1.   Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
- 2.   Direct Approach: Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
- 3.   Recursive Approach:  Wrap the XGboost with Scikit Learn's MultiOutputRegressor() to get multiple outputs by creating clusters of models that actually predict values individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price). Rinse & Repeat.
-
 
 Direct Approach explained:
 
