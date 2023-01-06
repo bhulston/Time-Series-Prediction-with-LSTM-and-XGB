@@ -99,6 +99,10 @@ Here we can see the performance of the XGBoost model in comparison to the baseli
 
 ![image](https://user-images.githubusercontent.com/79114425/210891496-e57eca25-8ea7-4965-9247-6bb4bce9b37b.png)
 
+In comparison to the baseline models, the XGBoost model returned a reasonable improvement in results
+
+<img width="269" alt="image" src="https://user-images.githubusercontent.com/79114425/210908792-2883a052-7d91-48c8-96f8-2a11e7e79bda.png">
+
 Because the XGBoost model performed pretty well, I wanted to see how it would perform when we trained it on 40 timesteps:
 
 ![image](https://user-images.githubusercontent.com/79114425/210891184-6421d4a7-36b5-4353-83ee-d6a55bfb72a8.png)
