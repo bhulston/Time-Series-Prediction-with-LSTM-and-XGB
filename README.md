@@ -17,45 +17,14 @@ I used my own terminal to stream the websocket and to transform the data to crea
 3. Design a series of predictive models including LSTM Neural Networks and Gradient Tree Boosting to predict future order book states 
 4. Compare model results and find the best model to predict order book states 
 
-## Data Collection
-When trying to collect relevant data on Order Book L2s, many exchange APIs do not retain historical data (only present data). So the best option is to connect to a websocket (in my case, the BitMex one) and stream data over a set period of time. Every 30 seconds, I collect data on the current order book and save the data according to each "batch".
+# Appendix
+1. Baseline Models
+2. XGBoost and LSTM models
+3. Data Collection
+4. Feature Engineering
 
-Some of the things we collected are: Order quantities at different bid and ask prices, timestamps, mid price. recent purchase price.
-Here is a graph of the mid-price data that we collected over about 24 hours:
+I put the data collection and feature engineering at the end if you are interested. I highly recommend looking at it!
 
-<img width="480" alt="image" src="https://user-images.githubusercontent.com/79114425/210905065-c9dd4492-2a99-4ae7-a38d-563bf76398fe.png">
-
-When it comes to prices on order books, liquidity definitely plays a larger role than many people seem to think. For price movements to occur, you have to "climb" over the steps on either side.
-Here is an example of the market depth(liquidity) near the mid-price:
-
-<img width="476" alt="image" src="https://user-images.githubusercontent.com/79114425/210905099-4d98d045-e9c2-4736-ac9d-4ba04744b3f0.png">
-
-## Feature Engineering
-I engineered several features based off of the data we collected. The formulas and algorithms can be found in the feature engineering doc:
-* Logarithmic transformation of returns
-* Liquidity depth at different levels to the mid-price
-* Smoothed data and directional signals
-* EMA and SMA
-
-Visualization of logarithmic transformation of returns:
-
-<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
-
-I engineered features that **suited my goal (trends, not prices**). This is important because when data is noisy, it can make predictions difficult and more "sporadic". To combat this:
-* I added smoothed directional signals and smoothed price columns (like EMA). 
-* By smoothing the data, I am hoping for the model to be less sensitive to sharp spikes, making it better at capturing general trends. 
-* On top of that, the price is stationary at different points, which can be hard for ML models to learn
-
-A good example is with the directional signal value
-
-Non-smoothed data, i.e. a +1 when price moved up (Red for a downtrend, blank for no movement, and green for an uptrend):
-
-<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905840-ee214bd0-b3d0-48de-b6c8-a9e90d3c88cd.png">
-
-Smoothed data, i.e. setting a threshold value for price movements to indicate 1 or -1, as well as using moving averages for the signal values:
-
-<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905941-38d47593-17b1-493b-bbf0-faadbe0fe9cd.png">
-By smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends. Looking at the image above, it is clear we do a much better job of capturing "stationary" trends, because we are less sensitive to small changes.
 
 ## Baseline Models
 First, I built some **univariate** baseline models using ARIMA and Exponential Smoothing. 
@@ -142,6 +111,46 @@ Here is the model on the testing data:
 While it seemed to perform really well on the training data, we can see our suspicions are confirmed that the predictions perform poorly. This is probably, in part, due to us using a recursive approach, rather than a direct one. When using recursive approaches, errors can compound on each other. Here is a great illustration I found:
 
 ![image](https://user-images.githubusercontent.com/79114425/210911074-04370cc2-019b-400d-ba70-592debd205c0.png)
+
+## Data Collection
+When trying to collect relevant data on Order Book L2s, many exchange APIs do not retain historical data (only present data). So the best option is to connect to a websocket (in my case, the BitMex one) and stream data over a set period of time. Every 30 seconds, I collect data on the current order book and save the data according to each "batch".
+
+Some of the things we collected are: Order quantities at different bid and ask prices, timestamps, mid price. recent purchase price.
+Here is a graph of the mid-price data that we collected over about 24 hours:
+
+<img width="480" alt="image" src="https://user-images.githubusercontent.com/79114425/210905065-c9dd4492-2a99-4ae7-a38d-563bf76398fe.png">
+
+When it comes to prices on order books, liquidity definitely plays a larger role than many people seem to think. For price movements to occur, you have to "climb" over the steps on either side.
+Here is an example of the market depth(liquidity) near the mid-price:
+
+<img width="476" alt="image" src="https://user-images.githubusercontent.com/79114425/210905099-4d98d045-e9c2-4736-ac9d-4ba04744b3f0.png">
+
+## Feature Engineering
+I engineered several features based off of the data we collected. The formulas and algorithms can be found in the feature engineering doc:
+* Logarithmic transformation of returns
+* Liquidity depth at different levels to the mid-price
+* Smoothed data and directional signals
+* EMA and SMA
+
+Visualization of logarithmic transformation of returns:
+
+<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
+
+I engineered features that **suited my goal (trends, not prices**). This is important because when data is noisy, it can make predictions difficult and more "sporadic". To combat this:
+* I added smoothed directional signals and smoothed price columns (like EMA). 
+* By smoothing the data, I am hoping for the model to be less sensitive to sharp spikes, making it better at capturing general trends. 
+* On top of that, the price is stationary at different points, which can be hard for ML models to learn
+
+A good example is with the directional signal value
+
+Non-smoothed data, i.e. a +1 when price moved up (Red for a downtrend, blank for no movement, and green for an uptrend):
+
+<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905840-ee214bd0-b3d0-48de-b6c8-a9e90d3c88cd.png">
+
+Smoothed data, i.e. setting a threshold value for price movements to indicate 1 or -1, as well as using moving averages for the signal values:
+
+<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905941-38d47593-17b1-493b-bbf0-faadbe0fe9cd.png">
+By smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends. Looking at the image above, it is clear we do a much better job of capturing "stationary" trends, because we are less sensitive to small changes.
 
 
 
