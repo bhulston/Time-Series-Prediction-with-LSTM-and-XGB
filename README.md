@@ -120,8 +120,10 @@ To build the LSTM, there is some more data processing that is needed in comparis
 * We need to scale the data to a [-1,1] scale, using an encoder and decoder to transform the values both ways
 * Add a lookback transformation that is essentially a moving window of data from past points
   * LSTM models use sequences as inputs that have a shape in 3 dimensions - [batch size, lookback/sequences, num features]
+  * Add lag features from previous timesteps at the current timestep
   * I.e. with a lookback of 10, input might be (2343 timesteps, 10 sequences, 19 features)
-
+  * I got a lot of inspiration from this [article](https://arxiv.org/pdf/2107.09055.pdf) as well
+  
 Here we can see the LSTM model compared to the training data. Values as inputs for the model are standardized, but I scaled them back up for these representations:
 
 <img width="560" alt="image" src="https://user-images.githubusercontent.com/79114425/208794211-3bc659a8-6447-4674-9a32-304b8a3a298f.png">
@@ -145,3 +147,4 @@ Depending on the volume of data and processing time, we might need an auto encod
 
 Due to the difficulty of predicting L2 order books (all orders open), we will use the L2 information and L1 information to predict the L1 results (mid, bid, ask prices)
 
+Something I would like to do in the future is collect data over a much longer period of time, and also work with sentiment analysis to see if there is any effect.
