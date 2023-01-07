@@ -144,21 +144,14 @@ Here we can see the performance of the XGBoost model in comparison to the baseli
 
 ## LSTMs
 
-With a little bit of research, you will find that LSTM neural networks seem to perform pretty poorly on real financial data. The reason for this is that they are extremely prone to over-fitting, and on top of that, they perform poorly when working with auto-regression problems.
-* LSTM window sizes don't seem to make a big difference (or can perform worse), despite being one of the main features when used on financial data
-* An LSTM model might be better suited as part of a language processing model
-
 To build the LSTM, there is some more data processing that is needed in comparison the XGBoost model. The main things are:
 * We need to scale the data to a [-1,1] scale, using an encoder and decoder to transform the values both ways
 * Add a lookback transformation that is essentially a moving window of data from past points
   * LSTM models use sequences as inputs that have a shape in 3 dimensions - [batch size, lookback/sequences, num features]
-  * Add lag features from previous timesteps at the current timestep
-  * I.e. with a lookback of 10, input might be (2343 timesteps, 10 sequences, 19 features)
-  * I got a lot of inspiration from this [article](https://arxiv.org/pdf/2107.09055.pdf) as well
+* Add lag features from previous timesteps at the current timestep
+* I got a lot of inspiration from this [article](https://arxiv.org/pdf/2107.09055.pdf) as well
 
 
-For the neural net itself, I used a BiDirectional LSTM, and several dense layers. The main problem I ran into was actually underfitting, rather than overfitting. This is likely due the highly stochastic and sporadic nature of the data. As a result, I found better results using 
-  
 Here we can see the LSTM model compared to the training data. Values as inputs for the model are standardized, but I scaled them back up for these representations:
 
 ![image](https://user-images.githubusercontent.com/79114425/211132805-0aa5aa92-60af-4a92-9186-0e1f779cc68b.png)
@@ -171,6 +164,10 @@ While it seemed to perform really well on the training data, we can see our susp
 
 ![image](https://user-images.githubusercontent.com/79114425/210911074-04370cc2-019b-400d-ba70-592debd205c0.png)
 
+
+With a little bit of research, you will find that LSTM neural networks seem to perform pretty poorly on real financial data. The reason for this is that they are extremely prone to over-fitting, and on top of that, they perform poorly when working with auto-regression problems.
+* LSTM window sizes don't seem to make a big difference (or can perform worse), despite being one of the main features when used on financial data
+* An LSTM model might be better suited as part of a language processing model
 
 ## Things/difficulties to note
 
