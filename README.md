@@ -22,9 +22,9 @@ Businesses or individuals might need to liquidate large amounts of $$ on short t
 ## Model Results
 
 There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
- 1.   Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
- 2.   Direct Approach: Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
- 3.   Recursive Approach:  Get multiple outputs by creating clusters of models that actually predict features individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
+ 1.   **AutoRegressive Approach:** Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
+ 2.   **Direct Approach:** Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
+ 3.   **Recursive Approach:**  Get multiple outputs by creating clusters of models that actually predict features individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
 
 Below, we can see the predictions of 10 future timesteps of our ARIMA model, the best Exponential Smoothing model, our LSTM model, and our XGBoost model. I also plotted the previous 20 timesteps.
 
