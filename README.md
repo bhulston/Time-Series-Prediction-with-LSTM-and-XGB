@@ -27,9 +27,18 @@ There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
  2.   Direct Approach: Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
  3.   Recursive Approach:  Get multiple outputs by creating clusters of models that actually predict features individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
 
+Below, we can see the predictions of 10 future timesteps of our ARIMA model, the best Exponential Smoothing model, our LSTM model, and our XGBoost model. I also plotted the previous 20 timesteps.
+
 ![image](https://user-images.githubusercontent.com/79114425/211131966-308bac14-764c-412d-b49d-d6a631ae0f27.png)
 
-Above, we can see the predictions of 10 future timesteps of our ARIMA model, the best Exponential Smoothing model, our LSTM model, and our XGBoost model. I also plotted the previous 20 timesteps.
+| Model  | MSE |
+| ------------- | ------------- |
+| Exponential Smoothing  | 1.833  |
+| Arima | 3.496  |
+| LSTM - Recursive | 1.972  |
+| XGBoost - Direct | 1.725  |
+
+
 * As you can see, the XGBoost model seems to perform the best, followed by our exponential smoothing baseline, and then the LSTM
 * The LSTM model performs even worse as we increase the timesteps, because we are using the recursive approach
     * By using the recursive approach, we essentially compound our error 
@@ -133,10 +142,6 @@ Here we can see the performance of the XGBoost model in comparison to the baseli
 
 ![image](https://user-images.githubusercontent.com/79114425/210891496-e57eca25-8ea7-4965-9247-6bb4bce9b37b.png)
 
-In comparison to the baseline models, the XGBoost model returned a reasonable improvement in results
-
-<img width="269" alt="image" src="https://user-images.githubusercontent.com/79114425/210908792-2883a052-7d91-48c8-96f8-2a11e7e79bda.png">
-
 
 ## LSTMs
 
@@ -151,6 +156,9 @@ To build the LSTM, there is some more data processing that is needed in comparis
   * Add lag features from previous timesteps at the current timestep
   * I.e. with a lookback of 10, input might be (2343 timesteps, 10 sequences, 19 features)
   * I got a lot of inspiration from this [article](https://arxiv.org/pdf/2107.09055.pdf) as well
+
+
+For the neural net itself, I used a BiDirectional LSTM, and several dense layers. The main problem I ran into was actually underfitting, rather than overfitting. This is likely due the highly stochastic and sporadic nature of the data. As a result, I found better results using 
   
 Here we can see the LSTM model compared to the training data. Values as inputs for the model are standardized, but I scaled them back up for these representations:
 
