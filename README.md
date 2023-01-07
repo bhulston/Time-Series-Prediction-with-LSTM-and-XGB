@@ -7,14 +7,6 @@ The plan is to build an algorithm that can predict LOB future states, in order t
 
 **The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends and capitalize on those**
 
-
-# Quick Guide
-I used my own terminal to stream the websocket and to transform the data to create a new dataset, which is used in the visuals and modeling notebook in Google Colab
-* The websocket folder contains the classes and websocket I use to collect data
-* The data and feature processing folder contains the transformations and aggregations I did to create my dataset for visuals and models
-* The PyOrderBook_visuals notebook contains all my code for the visuals about the data itself
-* The PyOrderBook__modeling notebook contains all my code for the prediction models and the associated visuals as well
-
 # Project Plan
 1. Take snap shots of the order book state at different times, both L2 (all open orders) and L1 (bid, mid, ask price) data
 2. Process data and perform feature extraction and engineering to create features that can be used properly by the models
@@ -22,10 +14,38 @@ I used my own terminal to stream the websocket and to transform the data to crea
 4. Compare model results and find the best model to predict order book states 
 
 # Appendix
-1. Data Collection
-2. Feature Engineering
-3. Baseline Models
-4. XGBoost and LSTM models
+1. Model Results
+2. Data Collection
+3. Feature Engineering
+4. Baseline Models
+5. XGBoost and LSTM models
+
+## Model Results
+
+There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
+ 1.   Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
+ 2.   Direct Approach: Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
+ 3.   Recursive Approach:  Get multiple outputs by creating clusters of models that actually predict features individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
+
+![image](https://user-images.githubusercontent.com/79114425/211131966-308bac14-764c-412d-b49d-d6a631ae0f27.png)
+
+Above, we can see the predictions of 10 future timesteps of our ARIMA model, the best Exponential Smoothing model, our LSTM model, and our XGBoost model. I also plotted the previous 20 timesteps.
+* As you can see, the XGBoost model seems to perform the best, followed by our exponential smoothing baseline, and then the LSTM
+* The LSTM model performs even worse as we increase the timesteps, because we are using the recursive approach
+    * By using the recursive approach, we essentially compound our error 
+* On the contrary, by using the direct approach with XGBoost, we train several different models that each predict at different timesteps in the future
+
+Direct Approach explained:
+
+<img width = "400" alt="image" src="https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png">
+
+Because the XGBoost model performed pretty well, I wanted to see how it would perform when we trained it on 40 timesteps:
+
+![image](https://user-images.githubusercontent.com/79114425/210891184-6421d4a7-36b5-4353-83ee-d6a55bfb72a8.png)
+
+* As you can see, the model is performing surprisingly well in capturing the trends of future movements
+* In fact, we don't see an increasing error even at the 40 timesteps in the future, compared to the original 10 that we predicted.
+   * By using the direct approach, we don't run into the issue of compounding error!!
 
 
 ## Data Collection
@@ -70,6 +90,7 @@ By smoothing the data we are able to reduce the "noise" in this feature and get 
 
 
 
+
 ## Baseline Models
 
 The dataset we are working with is L2 order book information from BitMex. This includes the orders at different price levels. I streamed data for around 24 hours, and data was collected very 30 seconds, amounting to 2500 rows, with 18 features columns after feature engineering. 
@@ -87,11 +108,6 @@ First, I built some **univariate** baseline models using ARIMA and Exponential S
 # XGB and LSTM Models
 After building the baselines, I built two models that take **multivariate** inputs to see if we can improve, a LSTM and XGBoosted Trees 
 * For the LSTM I used a recursive approach, while for the XGBoost model, I used a direct approach
-* 
-There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
- 1.   Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
- 2.   Direct Approach: Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
- 3.   Recursive Approach:  Get multiple outputs by creating clusters of models that actually predict features individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
 
 ## XGBoost
 XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradient boosted trees to make regression/classification predictions.
@@ -102,10 +118,6 @@ XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradie
   * [Fine tuning XGBoost](https://medium.com/towards-data-science/fine-tuning-xgboost-in-python-like-a-boss-b4543ed8b1e) - medium
 
 The main data processing we needed to conduct for XGBoost modeling was adding the lag features. Meaning at each timestep, I wanted to add values for the previous 20 timesteps as well so the XGBoost model would have relevant information on previous timesteps as well.
-
-Direct Approach explained:
-
-<img width = "400" alt="image" src="https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png">
 
 Hyperparameters:
 
@@ -125,13 +137,6 @@ In comparison to the baseline models, the XGBoost model returned a reasonable im
 
 <img width="269" alt="image" src="https://user-images.githubusercontent.com/79114425/210908792-2883a052-7d91-48c8-96f8-2a11e7e79bda.png">
 
-Because the XGBoost model performed pretty well, I wanted to see how it would perform when we trained it on 40 timesteps:
-
-![image](https://user-images.githubusercontent.com/79114425/210891184-6421d4a7-36b5-4353-83ee-d6a55bfb72a8.png)
-
-* As you can see, the model is performing surprisingly well in capturing the trends of future movements
-* In fact, we don't see an increasing error even at the 40 timesteps in the future, compared to the original 10 that we predicted.
-   * By using the direct approach, we don't run into the issue of compounding error!!
 
 ## LSTMs
 
@@ -149,11 +154,11 @@ To build the LSTM, there is some more data processing that is needed in comparis
   
 Here we can see the LSTM model compared to the training data. Values as inputs for the model are standardized, but I scaled them back up for these representations:
 
-<img width="560" alt="image" src="https://user-images.githubusercontent.com/79114425/208794211-3bc659a8-6447-4674-9a32-304b8a3a298f.png">
+![image](https://user-images.githubusercontent.com/79114425/211132805-0aa5aa92-60af-4a92-9186-0e1f779cc68b.png)
 
 Here is the model on the testing data:
 
-<img width="560" alt="image" src="https://user-images.githubusercontent.com/79114425/208794255-59518d74-a9fa-4008-b630-d7160809020d.png">
+![image](https://user-images.githubusercontent.com/79114425/211132813-43299fd0-41df-4f6b-baff-f352ae195881.png)
 
 While it seemed to perform really well on the training data, we can see our suspicions are confirmed that the predictions perform poorly. This is probably, in part, due to us using a recursive approach, rather than a direct one. When using recursive approaches, errors can compound on each other. Here is a great illustration I found:
 
