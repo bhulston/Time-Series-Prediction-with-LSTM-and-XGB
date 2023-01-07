@@ -40,9 +40,9 @@ Below, we can see the predictions of 10 future timesteps of our ARIMA model, the
 
 
 * As you can see, the XGBoost model seems to perform the best, followed by our exponential smoothing baseline, and then the LSTM
-* The LSTM model performs even worse as we increase the timesteps, because we are using the recursive approach
+* The LSTM model performs even worse as we increase the timesteps
     * By using the recursive approach, we essentially compound our error 
-* On the contrary, by using the direct approach with XGBoost, we train several different models that each predict at different timesteps in the future
+* On the contrary, by using the direct approach with XGBoost, we train several different models that each predict at different timesteps in the future, and avoid compounding errors
 
 Direct Approach explained:
 
@@ -52,8 +52,7 @@ Because the XGBoost model performed pretty well, I wanted to see how it would pe
 
 ![image](https://user-images.githubusercontent.com/79114425/210891184-6421d4a7-36b5-4353-83ee-d6a55bfb72a8.png)
 
-* As you can see, the model is performing surprisingly well in capturing the trends of future movements
-* In fact, we don't see an increasing error even at the 40 timesteps in the future, compared to the original 10 that we predicted.
+* We don't see an increasing error even at the 40 timesteps in the future, compared to the original 10 that we predicted.
    * By using the direct approach, we don't run into the issue of compounding error!!
 
 
