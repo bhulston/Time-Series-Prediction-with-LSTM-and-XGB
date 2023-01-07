@@ -14,7 +14,7 @@ Businesses or individuals might need to liquidate large amounts of $$ on short t
 4. Compare model results and find the best model to predict order book states 
 
 # Appendix
-1. [Model Results] (##model-results)
+1. [Model Results] (#model-results)
 2. Data Collection
 3. Feature Engineering
 4. Baseline Models
