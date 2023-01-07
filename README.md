@@ -1,5 +1,5 @@
-# Short-Frame-Price-Prediction
-The plan is to build an algorithm that can predict LOB future states, in order to find optimal opportunities for liquidation. Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
+# Short-Frame-Price-Prediction-on-Limit-Order-Book-Data
+Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
 
 * Many projects you find online use x testing data as inputs for their regression
 * In a real scenario, you would not have these future inputs, instead we need to make **multi-step** predictions, using _only_ the training data
@@ -14,7 +14,7 @@ The plan is to build an algorithm that can predict LOB future states, in order t
 4. Compare model results and find the best model to predict order book states 
 
 # Appendix
-1. Model Results
+1. [Model Results] (##model-results)
 2. Data Collection
 3. Feature Engineering
 4. Baseline Models
