@@ -1,9 +1,8 @@
 # Short-Frame-Price-Prediction-on-Limit-Order-Book-Data
 Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
 
-* Many projects you find online use x testing data as inputs for their regression
-* In a real scenario, you would not have these future inputs, instead we need to make **multi-step** predictions, using _only_ the training data
-   * We can either predict what those future inputs would be, or train the model to predict at several different timesteps in the future... More on this in modeling section  
+* Several online projects make "multistep" predictions using inputs from future steps to predict those same values, instead we need to make **multi-step** predictions, using _only_ the training data
+   * We can either predict what those future inputs would be, or train the model to predict at several different timesteps in the future... More on this below
 
 **The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends and capitalize on those**
 
