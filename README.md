@@ -150,6 +150,8 @@ To build the LSTM, there is some more data processing that is needed in comparis
 * Add lag features from previous timesteps at the current timestep
 * I got a lot of inspiration from this [article](https://arxiv.org/pdf/2107.09055.pdf) as well
 
+For the LSTM, we use two bidirectional LSTMs with several dense layers. The LSTMs also use a loockback function that allows us to use a sliding window to garner information from the past. On top of the lookback function, we add lag features of those previous timesteps, letting us assign unique weights both to the lookback window as a whole, as well as the individual points in it.
+
 
 Here we can see the LSTM model compared to the training data. Values as inputs for the model are standardized, but I scaled them back up for these representations:
 
