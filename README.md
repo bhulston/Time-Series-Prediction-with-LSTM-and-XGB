@@ -7,7 +7,7 @@ Businesses or individuals might need to liquidate large amounts of $$ on short t
 **The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends and capitalize on those**
 
 # Project Plan
-1. Take snap shots of the order book state at different times, both L2 (all open orders) and L1 (bid, mid, ask price) data
+1. Take snap shots of the order book state at different times from BitMex websockets, collect all L2(individual orders) data
 2. Process data and perform feature extraction and engineering to create features that can be used properly by the models
 3. Design a series of predictive models including LSTM Neural Networks and Gradient Tree Boosting to predict future order book states 
 4. Compare model results and find the best model to predict order book states 
