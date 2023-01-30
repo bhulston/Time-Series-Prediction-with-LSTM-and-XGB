@@ -4,7 +4,7 @@ Businesses or individuals might need to liquidate large amounts of $$ on short t
 * Several online projects make "multistep" predictions using inputs from future steps to predict those same values, instead we need to make **multi-step** predictions, using _only_ the training data
    * We can either predict what those future inputs would be, or train the model to predict at several different timesteps in the future... More on this below
 
-**The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends and capitalize on those**
+**The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends because getting exactly the correct regression value is unlikely on such short time frames (next 20 minutes, every 30 seconds)**
 
 # Project Plan
 1. Take snap shots of the order book state at different times from BitMex websockets, collect all L2(individual orders) data
