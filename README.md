@@ -25,6 +25,8 @@ For making multi-step predictions into the future, we can't use our "testing" da
  1.   **AutoRegressive Approach:** Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
  2.   **Direct Approach:** Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
  3.   **Recursive Approach:**  Get multiple outputs by creating clusters of models that actually predict features individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
+ 
+ We will use the direct approach with an XGBoost model, and the recursive approach with an LSTM neural network.
 
 Below, we can see the predictions of 10 future timesteps of our ARIMA model, the best Exponential Smoothing model, our LSTM model (Recursive Approach), and our XGBoost model (Direct Approach). I also plotted the previous 20 timesteps.
 
