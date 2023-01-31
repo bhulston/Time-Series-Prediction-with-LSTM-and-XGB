@@ -1,12 +1,10 @@
 # Short-Frame-Price-Prediction-on-Limit-Order-Book-Data
 Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
 
-Data is collected every 30 seconds over the course of 48 hours. A lot of the data is stationary which required some extra feature engineering. Predictions were made on both a 5 minute future time frame and a 20 minute time frame.
+Data is collected every 30 seconds over the course of 48 hours. Predictions were made on both a 5 minute future time frame and a 20 minute time frame.
 
 * We won't use future input values like liquidity or moving averages for predicting future timesteps. Instead, the model needs to predict many many timesteps in the future using only the training data
-   * More on this below
-
-**The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends because getting exactly the correct regression value is unlikely on such short time frames (next 20 minutes, every 30 seconds)**
+   * More on this in model results section
 
 # Project Plan
 1. Take snap shots of the order book state at different times from BitMex websockets, collect all L2(individual orders) data
@@ -23,10 +21,10 @@ Data is collected every 30 seconds over the course of 48 hours. A lot of the dat
 
 ## Model Results
 
-For making multi-step predictions into the future, we can't use our "testing" data inputs to make predictions. Rather, we can only use historical data to predict the future. There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
+For  multi-step predictions into the future, we can't use our "testing" data inputs to make predictions. Rather, we can only use historical data to predict the future. There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
  1.   **AutoRegressive Approach:** Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
  2.   **Direct Approach:** Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
- 3.   **Recursive Approach:**  Get multiple outputs by creating clusters of models that actually predict features individually at each timestep based on the previous value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
+ 3.   **Recursive Approach:**  Get multiple outputs by creating clusters of models that predict features individually at each timestep based on the previous predicted value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
  
  We will use the direct approach with an XGBoost model, and the recursive approach with an LSTM neural network.
 
