@@ -1,8 +1,10 @@
 # Short-Frame-Price-Prediction-on-Limit-Order-Book-Data
 Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
 
-* Several online projects make "multistep" predictions using inputs from future steps to predict those same values, instead we need to make **multi-step** predictions, using _only_ the training data
-   * We can either predict what those future inputs would be, or train the model to predict at several different timesteps in the future... More on this below
+Data is collected every 30 seconds over the course of 48 hours. A lot of the data is stationary which required some extra feature engineering. Predictions were made on both a 5 minute future time frame and a 20 minute time frame.
+
+* We won't use future input values like liquidity or moving averages for predicting future timesteps. Instead, the model needs to predict many many timesteps in the future using only the training data
+   * More on this below
 
 **The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends because getting exactly the correct regression value is unlikely on such short time frames (next 20 minutes, every 30 seconds)**
 
