@@ -52,9 +52,8 @@ Because the XGBoost model performed pretty well, I wanted to see how it would pe
 * We don't see an increasing error even at the 40 timesteps in the future, compared to the original 10 that we predicted.
    * By using the direct approach, we don't run into the issue of compounding error!!
 
-
 ## Data Collection
-When trying to collect relevant data on Order Book L2s, many exchange APIs do not retain historical data (only present data). So the best option is to connect to a websocket (in my case, the BitMex one) and stream data over a set period of time. Every 30 seconds, I collect data on the current order book and save the data according to each "batch".
+Every 30 seconds, I collect data on the current order book and save the data according to each "batch" because most exchange APIs don't have historical data.
 
 Some of the things we collected are: Order quantities at different bid and ask prices, timestamps, mid price. recent purchase price.
 Here is a graph of the mid-price data that we collected over about 24 hours:
@@ -67,13 +66,13 @@ Here is an example of the market depth(liquidity) near the mid-price:
 <img width="476" alt="image" src="https://user-images.githubusercontent.com/79114425/210905099-4d98d045-e9c2-4736-ac9d-4ba04744b3f0.png">
 
 ## Feature Engineering
-I engineered several features based off of the data we collected. The formulas and algorithms can be found in the feature engineering doc:
+I engineereed about 12 features based off of the data we collected. The formulas and algorithms can be found in the feature engineering doc:
 * Logarithmic transformation of returns
 * Liquidity depth at different levels to the mid-price
 * Smoothed data and directional signals
 * EMA and SMA
 
-Visualization of logarithmic transformation of returns, demonstrating how we can "simulate" stationary in time series with this transformation:
+Visualization of logarithmic transformation of returns, demonstrating how we can "simulate" stationarity in time series with this transformation:
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
 
