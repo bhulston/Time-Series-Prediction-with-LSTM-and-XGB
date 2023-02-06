@@ -1,10 +1,7 @@
 # Short-Frame-Price-Prediction-on-Limit-Order-Book-Data
 Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
 
-Data is collected every 30 seconds over the course of 48 hours. Predictions were made on both a 5 minute future time frame and a 20 minute time frame.
-
-* We won't use future input values like liquidity or moving averages for predicting future timesteps. Instead, the model needs to predict many many timesteps in the future using only the training data
-   * More on this in model results section
+Data is collected every 30 seconds over the course of 48 hours from BitMex exchange. Predictions were made on a 5 minute future time frame and a 20 minute time frame.
 
 # Project Plan
 1. Take snap shots of the order book state at different times from BitMex websockets, collect all L2(individual orders) data
@@ -21,10 +18,10 @@ Data is collected every 30 seconds over the course of 48 hours. Predictions were
 
 ## Model Results
 
-For  multi-step predictions into the future, we can't use our "testing" data inputs to make predictions. Rather, we can only use historical data to predict the future. There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
- 1.   **AutoRegressive Approach:** Using AutoRegression (or other regression based predictions) to predict univariate values which would be fed into our model for making predictions
- 2.   **Direct Approach:** Fit the regressor for each time point we want to predict. This is essentially its own model per timestep we want to predict.
- 3.   **Recursive Approach:**  Get multiple outputs by creating clusters of models that predict features individually at each timestep based on the previous predicted value. And then a larger model that predicts the value we actually are focused on (bid/ask price) based on predicted features. Rinse & Repeat.
+For  multi-step predictions into the future, we can't use "testing" data inputs to make predictions. Rather, we can only use timesteps before the train test split to predict the future. There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
+ 1.   **AutoRegressive Approach:** Using AutoRegression (or other regression based predictions) to predict univariate values for the models
+ 2.   **Direct Approach:** Fit a new regressor for each time point we want to predict. 
+ 3.   **Recursive Approach:**  Creating clusters of models that predict features individually at each timestep for each variable. And then a larger model that regresses the final value we want
  
  We will use the direct approach with an XGBoost model, and the recursive approach with an LSTM neural network.
 
@@ -42,8 +39,7 @@ Below, we can see the predictions of 10 future timesteps of our ARIMA model, the
 
 * As you can see, the XGBoost model seems to perform the best, followed by our exponential smoothing baseline, and then the LSTM
 * The LSTM model performs even worse as we increase the timesteps
-    * By using the recursive approach, we essentially compound our error 
-* On the contrary, by using the direct approach with XGBoost, we train several different models that each predict at different timesteps in the future, and avoid compounding errors
+    * This is because by using the recursive approach, we essentially compound our error 
 
 Direct Approach explained:
 
@@ -77,16 +73,18 @@ I engineered several features based off of the data we collected. The formulas a
 * Smoothed data and directional signals
 * EMA and SMA
 
-Visualization of logarithmic transformation of returns:
+Visualization of logarithmic transformation of returns, demonstrating how we can "simulate" stationary in time series with this transformation:
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
 
-I engineered features that **suited my goal (trends, not prices**). This is important because when data is noisy, it can make predictions difficult and more "sporadic". To combat this:
+I engineered features that **suited my goal (trends, not prices**). 
+
+To combat a lot of the noise:
 * I added smoothed directional signals and smoothed price columns (like EMA). 
 * By smoothing the data, I am hoping for the model to be less sensitive to sharp spikes, making it better at capturing general trends. 
 * On top of that, the price is stationary at different points, which can be hard for ML models to learn
 
-A good example is with the directional signal value
+A good example is with the directional signal value...
 
 Non-smoothed data, i.e. a +1 when price moved up (Red for a downtrend, blank for no movement, and green for an uptrend):
 
@@ -95,14 +93,11 @@ Non-smoothed data, i.e. a +1 when price moved up (Red for a downtrend, blank for
 Smoothed data, i.e. setting a threshold value for price movements to indicate 1 or -1, as well as using moving averages for the signal values:
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905941-38d47593-17b1-493b-bbf0-faadbe0fe9cd.png">
-By smoothing the data we are able to reduce the "noise" in this feature and get a better representation of general directional trends. Looking at the image above, it is clear we do a much better job of capturing "stationary" trends, because we are less sensitive to small changes.
 
-
+Looking at the image above, it is clear we do a much better job of capturing "stationary" trends, because we are less sensitive to small changes.
 
 
 ## Baseline Models
-
-The dataset we are working with is L2 order book information from BitMex. This includes the orders at different price levels. I streamed data for around 24 hours, and data was collected very 30 seconds, amounting to 2500 rows, with 18 features columns after feature engineering. 
 
 First, I built some **univariate** baseline models using ARIMA and Exponential Smoothing. 
 * We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average)
@@ -111,8 +106,7 @@ First, I built some **univariate** baseline models using ARIMA and Exponential S
 * Note that the triple exponential smoothing model is probably a bad choice for this task because on this short time frame, it's unlikely to have any meaningful seasonality trends
 
 ![image](https://user-images.githubusercontent.com/79114425/210890640-2a1affa7-14c2-49d0-93ac-87c3a8a8141f.png)
-* While mse is a commmon measurement for success, I think in the case of this project, plotting the values gives us a much better idea of how models are performing relatively. 
-* **The goal of this project is NOT to get as close as possible at each point, but rather to capture general trends (up, down, or stationary)**
+* While mse is a commmon measurement for success, I think in the case of this project, visualizing the values gives us a much better idea of how models are performing relatively. 
 
 # XGB and LSTM Models
 After building the baselines, I built two models that take **multivariate** inputs to see if we can improve, a LSTM and XGBoosted Trees 
@@ -153,7 +147,6 @@ To build the LSTM, there is some more data processing that is needed in comparis
 * I got a lot of inspiration from this [article](https://arxiv.org/pdf/2107.09055.pdf) as well
 
 For the LSTM, we use two bidirectional LSTMs with several dense layers. The LSTMs also use a loockback function that allows us to use a sliding window to garner information from the past. On top of the lookback function, we add lag features of those previous timesteps, letting us assign unique weights both to the lookback window as a whole, as well as the individual points in it.
-
 
 Here we can see the LSTM model compared to the training data. Values as inputs for the model are standardized, but I scaled them back up for these representations:
 
