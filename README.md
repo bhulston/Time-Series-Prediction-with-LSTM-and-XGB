@@ -72,7 +72,7 @@ I engineereed about 12 features based off of the data we collected. The formulas
 * Smoothed data and directional signals
 * EMA and SMA
 
-Visualization of logarithmic transformation of returns, demonstrating how we can "simulate" stationarity in time series with this transformation:
+Visualization of logarithmic transformation of returns, demonstrating how we can monotonically reduce variance in time series with this transformation:
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
 
