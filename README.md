@@ -9,7 +9,7 @@ Data is collected every 30 seconds over the course of 48 hours from BitMex excha
 3. Design a series of predictive models including LSTM Neural Networks and Gradient Tree Boosting to predict future order book states 
 4. Compare model results and find the best model to predict order book states 
 
-# Appendix
+# Table of Contents
 1. [Model Results](#model-results)
 2. [Data Collection](#data-collection)
 3. [Feature Engineering](#feature-engineering)
