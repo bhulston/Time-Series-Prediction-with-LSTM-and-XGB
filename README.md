@@ -1,4 +1,4 @@
-# Short-Frame-Price-Prediction-on-Limit-Order-Book-Data - Detailed/technical Walkthrough
+# Short-Frame-Price-Prediction-on-Limit-Order-Book-Data - Detailed/Technical Walkthrough
 Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
 
 Data is collected every 30 seconds over the course of 48 hours from BitMex exchange. Predictions were made on a 5 minute future time frame and a 20 minute time frame.
