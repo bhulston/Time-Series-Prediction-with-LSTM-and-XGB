@@ -41,7 +41,8 @@ There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
 ![image](https://user-images.githubusercontent.com/79114425/210891184-6421d4a7-36b5-4353-83ee-d6a55bfb72a8.png)
 
 * We don't see an increasing error even at the 40 timesteps in the future, compared to the original 10 that we predicted.
-* 
+
+
 Direct Approach explained:
 
 <img width = "400" alt="image" src="https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png">
