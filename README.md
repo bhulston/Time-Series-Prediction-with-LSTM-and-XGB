@@ -1,5 +1,5 @@
-# Short-Frame-Price-Prediction-on-Limit-Order-Book-Data - Short look (Check out the extended read me if you have time)
-Businesses or individuals might need to liquidate large amounts of $$ on short time frames. Data was collected live every 30 seconds over the course of 48 hours from BitMex exchange APIs.
+# Short-Frame-Price-Prediction-on-Limit-Order-Book-Data - Short look 
+(Check out the extended read me if you have time)
 
 # Project Plan
 1. Take snap shots of the order book state at different times from BitMex websockets, collect all L2(individual orders) data
@@ -50,41 +50,31 @@ Because the XGBoost model performed pretty well, I wanted to see how it would pe
 ## Data Collection
 Every 30 seconds, I collect data on the current order book and save the data according to each "batch" because most exchange APIs don't have historical data.
 
-Here is a graph of the mid-price data that we collected over about 24 hours:
-
-<img width="480" alt="image" src="https://user-images.githubusercontent.com/79114425/210905065-c9dd4492-2a99-4ae7-a38d-563bf76398fe.png">
-
 Here is an example of the market depth(liquidity) near the mid-price:
 
 <img width="476" alt="image" src="https://user-images.githubusercontent.com/79114425/210905099-4d98d045-e9c2-4736-ac9d-4ba04744b3f0.png">
 
 ## Feature Engineering
-I engineereed about 12 features based off of the data we collected. The formulas and algorithms can be found in the feature engineering doc:
-* Logarithmic transformation of returns
-* Liquidity depth at different levels to the mid-price
-* Smoothed data and directional signals
-* EMA and SMA
+I engineereed about 12 features based off of the data we collected. The formulas and algorithms can be found in the feature engineering doc
 
-To combat a lot of the noise:
+To combat noise:
 * I smooth data in hopes for the model to be less sensitive to sharp spikes, making it better at capturing general trends. 
 
 A good example is with the directional signal value...
 
-Non-smoothed data, i.e. a +1 when price moved up (Red for a downtrend, blank for no movement, and green for an uptrend):
+Non-smoothed data:
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905840-ee214bd0-b3d0-48de-b6c8-a9e90d3c88cd.png">
 
-Smoothed data, i.e. setting a threshold value for price movements to indicate 1 or -1, as well as using moving averages for the signal values:
+Smoothed data:
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/210905941-38d47593-17b1-493b-bbf0-faadbe0fe9cd.png">
 
-Looking at the image above, it is clear we do a much better job of capturing "stationary" trends, because we are less sensitive to small changes.
-
+It is clear we do a much better job of capturing "stationary" trends, because we are less sensitive to small changes.
 
 ## Baseline Models
 
 First, I built some **univariate** baseline models using ARIMA and Exponential Smoothing. 
-* We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average)
 
 ![image](https://user-images.githubusercontent.com/79114425/210890640-2a1affa7-14c2-49d0-93ac-87c3a8a8141f.png)
 * While mse is a commmon measurement for success, I think in the case of this project, visualizing the values gives us a much better idea of how models are performing relatively. 
