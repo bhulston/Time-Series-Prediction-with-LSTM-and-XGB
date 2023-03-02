@@ -77,7 +77,6 @@ It is clear we do a much better job of capturing "stationary" trends, because we
 First, I built some **univariate** baseline models using ARIMA and Exponential Smoothing. 
 
 ![image](https://user-images.githubusercontent.com/79114425/210890640-2a1affa7-14c2-49d0-93ac-87c3a8a8141f.png)
-* While mse is a commmon measurement for success, I think in the case of this project, visualizing the values gives us a much better idea of how models are performing relatively. 
 
 # XGB and LSTM Models
 After building the baselines, I built two models that take **multivariate** inputs to see if we can improve, a LSTM and XGBoosted Trees 
@@ -96,10 +95,8 @@ Hyperparameters:
 <img width="200" alt="image" src="https://user-images.githubusercontent.com/79114425/210907642-69d7499b-7682-4127-8619-0d4f06d10e21.png">
 
 * The most important hyperparameters I focused on when tuning were:
-  * **n_estimators**: In a dataset with not that much data, we had to raise this from the default of 100 to get proper results
   * **max_depth**: The max depth of the trees. Making sure this value is not too high is crucial for good results. 
   * **learning_rate**: Many models out there have very small learning rates, but due to the stochastic nature of this project, a higher learning rate of 0.1 is more appropriate
-  * **colsample_bytree**: Proportion of columns in each individual tree. We reduce this because we do have a lot of features (about 20)
 
 Here we can see the performance of the XGBoost model in comparison to the baseline models we created.
 
@@ -111,9 +108,9 @@ Here we can see the performance of the XGBoost model in comparison to the baseli
 To build the LSTM, there is some more data processing that is needed in comparison the XGBoost model. 
 * I got a lot of inspiration from this [article](https://arxiv.org/pdf/2107.09055.pdf) as well
 
-For the LSTM, we use two bidirectional LSTMs with several dense layers. The LSTMs also use a loockback function that allows us to use a sliding window to garner information from the past. On top of the lookback function, we add lag features of those previous timesteps, letting us assign unique weights both to the lookback window as a whole, as well as the individual points in it.
+For the LSTM, we use two bidirectional LSTMs with several dense layers. The LSTMs also use a loockback function that allows us to use a sliding window to garner information from the past. 
 
-Here we can see the LSTM model compared to the training data. Values as inputs for the model are standardized, but I scaled them back up for these representations:
+Here we can see the LSTM model compared to the training data:
 
 ![image](https://user-images.githubusercontent.com/79114425/211132805-0aa5aa92-60af-4a92-9186-0e1f779cc68b.png)
 
@@ -121,20 +118,10 @@ Here is the model on the testing data:
 
 ![image](https://user-images.githubusercontent.com/79114425/211132813-43299fd0-41df-4f6b-baff-f352ae195881.png)
 
-While it seemed to perform really well on the training data, we can see our suspicions are confirmed that the predictions perform poorly. This is probably, in part, due to us using a recursive approach, rather than a direct one. When using recursive approaches, errors can compound on each other. Here is a great illustration I found:
+When using recursive approaches, errors can compound on each other. Here is a great illustration I found:
 
 ![image](https://user-images.githubusercontent.com/79114425/210911074-04370cc2-019b-400d-ba70-592debd205c0.png)
 
 
 With a little bit of research, you will find that LSTM neural networks seem to perform pretty poorly on real financial data. The reason for this is that they are extremely prone to over-fitting, and on top of that, they perform poorly when working with auto-regression problems.
 
-## Things/difficulties to note
-
-This article highlights how predicting prices is difficult, as prices seem to change by a very small amount if not 0, with noise.
-https://hackernoon.com/dont-be-fooled-deceptive-cryptocurrency-price-predictions-using-deep-learning-bf27e4837151 
-
-Depending on the volume of data and processing time, we might need an auto encoder to perform this analysis in a timely manner since this issue requires relatively quick response times. The xgboost direct approach, while performing the best, also took the longest to train each time.
-
-Due to the difficulty of predicting L2 order books (all orders open), we will use the L2 information and L1 information to predict the L1 results (mid, bid, ask prices)
-
-Something I would like to do in the future is collect data over a much longer period of time, and also work with sentiment analysis to see if there is any effect.
