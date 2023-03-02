@@ -1,7 +1,5 @@
-# Short-Frame-Price-Prediction-on-Limit-Order-Book-Data - Detailed/Technical Walkthrough
-Businesses or individuals might need to liquidate large amounts of $$ on short time frames. For any organization that has to perform high-volume purchases or liquidations on the market, this could reduce costs
-
-Data is collected every 30 seconds over the course of 48 hours from BitMex exchange. Predictions were made on a 5 minute future time frame and a 20 minute time frame.
+# Short-Frame-Price-Prediction-on-Limit-Order-Book-Data - Short look (Check out the extended read me if you have time)
+Businesses or individuals might need to liquidate large amounts of $$ on short time frames. Data was collected live every 30 seconds over the course of 48 hours from BitMex exchange APIs.
 
 # Project Plan
 1. Take snap shots of the order book state at different times from BitMex websockets, collect all L2(individual orders) data
@@ -18,14 +16,11 @@ Data is collected every 30 seconds over the course of 48 hours from BitMex excha
 
 ## Model Results
 
-For  multi-step predictions into the future, we can't use "testing" data inputs to make predictions. Rather, we can only use timesteps before the train test split to predict the future. There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
- 1.   **AutoRegressive Approach:** Using AutoRegression (or other regression based predictions) to predict univariate values for the models
- 2.   **Direct Approach:** Fit a new regressor for each time point we want to predict. 
- 3.   **Recursive Approach:**  Creating clusters of models that predict features individually at each timestep for each variable. And then a larger model that regresses the final value we want
+There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
+ 1.   **Direct Approach:** Fit a new regressor for each future time point we want to predict. 
+ 2.   **Recursive Approach:**  Creating clusters of models that predict features individually at each timestep for each variable. And then a larger model that regresses the final value we want
  
- We will use the direct approach with an XGBoost model, and the recursive approach with an LSTM neural network.
-
-Below, we can see the predictions of 10 future timesteps of our ARIMA model, the best Exponential Smoothing model, our LSTM model (Recursive Approach), and our XGBoost model (Direct Approach). I also plotted the previous 20 timesteps.
+ We will use the direct approach with an XGBoost model, and the recursive approach with an LSTM neural network. Below, we can see the predictions of 10 future timesteps of our ARIMA, Exponential Smoothing, LSTM, and our XGBoost model. 
 
 ![image](https://user-images.githubusercontent.com/79114425/211131966-308bac14-764c-412d-b49d-d6a631ae0f27.png)
 
@@ -37,9 +32,9 @@ Below, we can see the predictions of 10 future timesteps of our ARIMA model, the
 | XGBoost - Direct | 1.725  |
 
 
-* As you can see, the XGBoost model seems to perform the best, followed by our exponential smoothing baseline, and then the LSTM
-* The LSTM model performs even worse as we increase the timesteps
-    * This is because by using the recursive approach, we essentially compound our error 
+* XGBoost model seems to perform the best, followed by our exponential smoothing baseline, and then the LSTM
+* The LSTM model performs worse as we increase the timesteps
+    * This is because by using the recursive approach, we essentially compound our error, more on this in model section
 
 Direct Approach explained:
 
@@ -55,12 +50,10 @@ Because the XGBoost model performed pretty well, I wanted to see how it would pe
 ## Data Collection
 Every 30 seconds, I collect data on the current order book and save the data according to each "batch" because most exchange APIs don't have historical data.
 
-Some of the things we collected are: Order quantities at different bid and ask prices, timestamps, mid price. recent purchase price.
 Here is a graph of the mid-price data that we collected over about 24 hours:
 
 <img width="480" alt="image" src="https://user-images.githubusercontent.com/79114425/210905065-c9dd4492-2a99-4ae7-a38d-563bf76398fe.png">
 
-When it comes to prices on order books, liquidity definitely plays a larger role than many people seem to think. For price movements to occur, you have to "climb" over the steps on either side.
 Here is an example of the market depth(liquidity) near the mid-price:
 
 <img width="476" alt="image" src="https://user-images.githubusercontent.com/79114425/210905099-4d98d045-e9c2-4736-ac9d-4ba04744b3f0.png">
@@ -72,16 +65,8 @@ I engineereed about 12 features based off of the data we collected. The formulas
 * Smoothed data and directional signals
 * EMA and SMA
 
-Visualization of logarithmic transformation of returns, demonstrating how we can monotonically reduce variance in time series with this transformation:
-
-<img width="450" alt="image" src="https://user-images.githubusercontent.com/79114425/208793698-2324802d-453a-4c5e-a244-955cd417f7f6.png">
-
-I engineered features that **suited my goal (trends, not prices**). 
-
 To combat a lot of the noise:
-* I added smoothed directional signals and smoothed price columns (like EMA). 
-* By smoothing the data, I am hoping for the model to be less sensitive to sharp spikes, making it better at capturing general trends. 
-* On top of that, the price is stationary at different points, which can be hard for ML models to learn
+* I smooth data in hopes for the model to be less sensitive to sharp spikes, making it better at capturing general trends. 
 
 A good example is with the directional signal value...
 
@@ -100,26 +85,21 @@ Looking at the image above, it is clear we do a much better job of capturing "st
 
 First, I built some **univariate** baseline models using ARIMA and Exponential Smoothing. 
 * We used double exponential smoothing to capture trend movements, triple xponential smoothing for taking into account seasonality, and an ARIMA model (Autoregressive Integrated Moving Average)
-  * Alpha in exponential smoothing models indicate to us how much we want to smooth the data. Higher alphas indicate we want to more heavily weight recent points.
-  * These are the most common statistical methods for time-series predictions.
-* Note that the triple exponential smoothing model is probably a bad choice for this task because on this short time frame, it's unlikely to have any meaningful seasonality trends
 
 ![image](https://user-images.githubusercontent.com/79114425/210890640-2a1affa7-14c2-49d0-93ac-87c3a8a8141f.png)
 * While mse is a commmon measurement for success, I think in the case of this project, visualizing the values gives us a much better idea of how models are performing relatively. 
 
 # XGB and LSTM Models
 After building the baselines, I built two models that take **multivariate** inputs to see if we can improve, a LSTM and XGBoosted Trees 
-* For the LSTM I used a recursive approach, while for the XGBoost model, I used a direct approach
 
 ## XGBoost
-XGBoost is short for "Extreme Gradient Boosting", and uses an ensemble of gradient boosted trees to make regression/classification predictions.
-* The main thing this requires is a lot of hyper parameter tuning! With the right tuning, XGBoost models seem to consistently outperform many other models, including ones specifically built for time-series
-* Some resources I used for XGBoost:
+
+Some resources I used for XGBoost:
   * [XGBoost](https://arxiv.org/abs/1603.02754) - arxiv
   * [Time Series Prediction Models](https://arxiv.org/pdf/2103.14250.pdf) -arxiv
   * [Fine tuning XGBoost](https://medium.com/towards-data-science/fine-tuning-xgboost-in-python-like-a-boss-b4543ed8b1e) - medium
 
-The main data processing we needed to conduct for XGBoost modeling was adding the lag features. Meaning at each timestep, I wanted to add values for the previous 20 timesteps as well so the XGBoost model would have relevant information on previous timesteps as well.
+At each timestep, I wanted to add values for the previous 20 timesteps as well so the XGBoost model would have relevant information on previous timesteps as well.
 
 Hyperparameters:
 
@@ -127,9 +107,9 @@ Hyperparameters:
 
 * The most important hyperparameters I focused on when tuning were:
   * **n_estimators**: In a dataset with not that much data, we had to raise this from the default of 100 to get proper results
-  * **max_depth**: The max depth of the trees. The whole point of an XGBoost model is to leverage an ensemble of weak learners. Thus, making sure this value is not too high is crucial for good results. 
-  * **learning_rate**: How "fast" our model learns, or really the steps that it takes when using gradient descent for optimization. Many models out there have very small learning rates, but due to the stochastic nature of this project, a higher learning rate of 0.1 is more appropriate to avoid getting stuck in local minimas
-  * **colsample_bytree**: This value indicates the proportions of columns to be used in each tree that is built. We reduce this because we do have a lot of features (about 20)
+  * **max_depth**: The max depth of the trees. Making sure this value is not too high is crucial for good results. 
+  * **learning_rate**: Many models out there have very small learning rates, but due to the stochastic nature of this project, a higher learning rate of 0.1 is more appropriate
+  * **colsample_bytree**: Proportion of columns in each individual tree. We reduce this because we do have a lot of features (about 20)
 
 Here we can see the performance of the XGBoost model in comparison to the baseline models we created.
 
@@ -138,11 +118,7 @@ Here we can see the performance of the XGBoost model in comparison to the baseli
 
 ## LSTMs
 
-To build the LSTM, there is some more data processing that is needed in comparison the XGBoost model. The main things are:
-* We need to scale the data to a [-1,1] scale, using an encoder and decoder to transform the values both ways
-* Add a lookback transformation that is essentially a moving window of data from past points
-  * LSTM models use sequences as inputs that have a shape in 3 dimensions - [batch size, lookback/sequences, num features]
-* Add lag features from previous timesteps at the current timestep
+To build the LSTM, there is some more data processing that is needed in comparison the XGBoost model. 
 * I got a lot of inspiration from this [article](https://arxiv.org/pdf/2107.09055.pdf) as well
 
 For the LSTM, we use two bidirectional LSTMs with several dense layers. The LSTMs also use a loockback function that allows us to use a sliding window to garner information from the past. On top of the lookback function, we add lag features of those previous timesteps, letting us assign unique weights both to the lookback window as a whole, as well as the individual points in it.
@@ -161,8 +137,6 @@ While it seemed to perform really well on the training data, we can see our susp
 
 
 With a little bit of research, you will find that LSTM neural networks seem to perform pretty poorly on real financial data. The reason for this is that they are extremely prone to over-fitting, and on top of that, they perform poorly when working with auto-regression problems.
-* LSTM window sizes don't seem to make a big difference (or can perform worse), despite being one of the main features when used on financial data
-* An LSTM model might be better suited as part of a language processing model
 
 ## Things/difficulties to note
 
