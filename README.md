@@ -20,7 +20,7 @@ There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
  1.   **Direct Approach:** Fit a new regressor for each future time point we want to predict. 
  2.   **Recursive Approach:**  Creating clusters of models that predict features individually at each timestep for each variable. And then a larger model that regresses the final value we want
  
- We will use the direct approach with an XGBoost model, and the recursive approach with an LSTM neural network. Below, we can see the predictions of 10 future timesteps of our ARIMA, Exponential Smoothing, LSTM, and our XGBoost model. 
+ We will use the direct approach with an XGBoost model, and the recursive approach with an LSTM neural network. The goal is to capture trends, so we look at the most recent 10 timesteps...
 
 ![image](https://user-images.githubusercontent.com/79114425/211131966-308bac14-764c-412d-b49d-d6a631ae0f27.png)
 
@@ -36,16 +36,15 @@ There are a few ways to setup XGBoost (and LSTM) for multi-step predictions:
 * The LSTM model performs worse as we increase the timesteps
     * This is because by using the recursive approach, we essentially compound our error, more on this in model section
 
-Direct Approach explained:
-
-<img width = "400" alt="image" src="https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png">
-
-Because the XGBoost model performed pretty well, I wanted to see how it would perform when we trained it on 40 timesteps:
+40 timesteps with XGBoost
 
 ![image](https://user-images.githubusercontent.com/79114425/210891184-6421d4a7-36b5-4353-83ee-d6a55bfb72a8.png)
 
 * We don't see an increasing error even at the 40 timesteps in the future, compared to the original 10 that we predicted.
-   * By using the direct approach, we don't run into the issue of compounding error!!
+* 
+Direct Approach explained:
+
+<img width = "400" alt="image" src="https://user-images.githubusercontent.com/79114425/210893972-caa8babc-faa6-4bea-b652-c4ca3483d6fa.png">
 
 ## Data Collection
 Every 30 seconds, I collect data on the current order book and save the data according to each "batch" because most exchange APIs don't have historical data.
