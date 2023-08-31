@@ -1,5 +1,5 @@
 # Short-Frame-Price-Prediction-on-Limit-Order-Book-Data - Short look 
-(Check out the extended read me if you have time)
+(Please please Check out the extended read me if you have the time. It is much more fleshed out)
 
 # Project Plan
 1. Take snap shots of the order book state at different times from BitMex websockets, collect all L2(individual orders) data
